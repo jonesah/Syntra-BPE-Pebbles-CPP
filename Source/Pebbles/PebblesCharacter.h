@@ -46,6 +46,11 @@ class APebblesCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractAction;
+	
+	AActor* _interactionTarget;
+
 public:
 	APebblesCharacter();
 	
@@ -57,7 +62,7 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-			
+	void Interact(const FInputActionValue& Value);
 
 protected:
 	// APawn interface
