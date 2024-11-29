@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Elements/Framework/TypedElementUtil.h"
 #include "Weapons/ProjectileWeapon.h"
 #include "Weapons/Weapon.h"
@@ -56,32 +57,32 @@ APebblesCharacter::APebblesCharacter()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
-	Weapon* myFirstWeapon = new Weapon("Bonecleaver" , 5);
-	Weapon* mySecondWeapon = new Weapon("FonsDeSpons", 1);
-	if(GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-	"This weapon named " + myFirstWeapon->GetName() + " does damage in the amount of " + FString::FromInt(myFirstWeapon->Damage));
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-	"This weapon named " + mySecondWeapon->GetName() + " does damage in the amount of " + FString::FromInt(mySecondWeapon->Damage));
-	}
-	
-	ProjectileWeapon* myProjectileWeapon = new ProjectileWeapon("DeGooier", 20, 6);
-	ProjectileWeapon* myOtherProjectileWeapon = new ProjectileWeapon("EierDooier", 15, 12);
-	
-	if(GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-"This weapon named " + myProjectileWeapon->GetName() + " has ammo " +
-			FString::FromInt(myProjectileWeapon->Ammo) + " does damage in the amount of " + FString::FromInt(myProjectileWeapon->Damage));
-
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-"This weapon named " + myOtherProjectileWeapon->GetName() + " has ammo " +
-			FString::FromInt(myOtherProjectileWeapon->Ammo) + " does damage in the amount of " + FString::FromInt(myOtherProjectileWeapon->Damage));
-	}
-	
-	//character earns fast reload perk
-	myOtherProjectileWeapon->SetReloadSpeed(1);
+// 	Weapon* myFirstWeapon = new Weapon("Bonecleaver" , 5);
+// 	Weapon* mySecondWeapon = new Weapon("FonsDeSpons", 1);
+// 	if(GEngine)
+// 	{
+// 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+// 	"This weapon named " + myFirstWeapon->GetName() + " does damage in the amount of " + FString::FromInt(myFirstWeapon->Damage));
+// 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+// 	"This weapon named " + mySecondWeapon->GetName() + " does damage in the amount of " + FString::FromInt(mySecondWeapon->Damage));
+// 	}
+// 	
+// 	ProjectileWeapon* myProjectileWeapon = new ProjectileWeapon("DeGooier", 20, 6);
+// 	ProjectileWeapon* myOtherProjectileWeapon = new ProjectileWeapon("EierDooier", 15, 12);
+// 	
+// 	if(GEngine)
+// 	{
+// 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+// "This weapon named " + myProjectileWeapon->GetName() + " has ammo " +
+// 			FString::FromInt(myProjectileWeapon->Ammo) + " does damage in the amount of " + FString::FromInt(myProjectileWeapon->Damage));
+//
+// 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
+// "This weapon named " + myOtherProjectileWeapon->GetName() + " has ammo " +
+// 			FString::FromInt(myOtherProjectileWeapon->Ammo) + " does damage in the amount of " + FString::FromInt(myOtherProjectileWeapon->Damage));
+// 	}
+// 	
+// 	//character earns fast reload perk
+// 	myOtherProjectileWeapon->SetReloadSpeed(1);
 	
 }
 
@@ -91,16 +92,37 @@ void APebblesCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
-void APebblesCharacter::Tick(float DeltaTime)
+void APebblesCharacter::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaTime);
-	//
-	// FString hello = "C++ Hello";
-	// _counter++;
-	//
-	// if(GEngine)
-	// 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-	// 		hello + FString::FromInt(_counter));
+	Super::Tick(DeltaSeconds);
+
+	//SphereOverlapActors
+	
+	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
+	objectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
+	TArray<AActor*> actorsToIgnore;
+	actorsToIgnore.Add(this);
+	TArray<AActor*> outActors;
+	
+	bool hasOverlap = UKismetSystemLibrary::SphereOverlapActors(
+		GetWorld(),
+		GetActorLocation(),
+		100,
+		objectTypes,
+		nullptr,
+		actorsToIgnore,
+		outActors);
+
+	if(hasOverlap && outActors.Num() > 0)
+	{
+		AActor* interactionTarget = outActors[0];
+		
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow,
+		"Press E to interact with " + interactionTarget->GetName() + "!");
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -129,6 +151,8 @@ void APebblesCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APebblesCharacter::Look);
+
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &APebblesCharacter::Interact);
 	}
 	else
 	{
@@ -171,3 +195,15 @@ void APebblesCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
+
+void APebblesCharacter::Interact(const FInputActionValue& Value)
+{
+	if(GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,
+	"Interacting ");
+	}
+	
+}
+
+
