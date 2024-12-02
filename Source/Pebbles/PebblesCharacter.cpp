@@ -12,10 +12,10 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Elements/Framework/TypedElementUtil.h"
 #include "Weapons/ProjectileWeapon.h"
 #include "Weapons/Weapon.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -94,43 +94,40 @@ void APebblesCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
-void APebblesCharacter::Tick(float DeltaTime)
+void APebblesCharacter::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaTime);
-	//
-	// FString hello = "C++ Hello";
-	// _counter++;
-	//
-	// if(GEngine)
-	// 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow,
-	// 		hello + FString::FromInt(_counter));
+	Super::Tick(DeltaSeconds);
 
+	//SphereOverlapActors
+	
 	TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
 	objectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
-
-	TArray<AActor*> actorsToIgnore; 
-	actorsToIgnore.Add(GetOwner());
-
+	TArray<AActor*> actorsToIgnore;
+	actorsToIgnore.Add(this);
 	TArray<AActor*> outActors;
 	
-	auto isColliding =  UKismetSystemLibrary::SphereOverlapActors(
+	bool hasOverlap = UKismetSystemLibrary::SphereOverlapActors(
 		GetWorld(),
 		GetActorLocation(),
-		200,
+		100,
 		objectTypes,
 		nullptr,
 		actorsToIgnore,
-		outActors
-	);
+		outActors);
 
-	if(!isColliding)
-		return;
-
-	_interactionTarget = outActors[0];
-
-	if(GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow,
-			"Press E to interact with " + _interactionTarget -> GetName());
+	if(hasOverlap && outActors.Num() > 0)
+	{
+		_interactionTarget = outActors[0];
+		
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow,
+		"Press E to interact with " + _interactionTarget->GetName() + "!");
+		}
+	} else
+	{
+		_interactionTarget = nullptr;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -160,7 +157,7 @@ void APebblesCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APebblesCharacter::Look);
 
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &APebblesCharacter::Interact);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &APebblesCharacter::Interact);
 	}
 	else
 	{
@@ -206,20 +203,22 @@ void APebblesCharacter::Look(const FInputActionValue& Value)
 
 void APebblesCharacter::Interact(const FInputActionValue& Value)
 {
-	if(_interactionTarget == nullptr)
-		return;
-
-	ADoor* door = Cast<ADoor>(_interactionTarget);
-	if(door != nullptr)
+	if(_interactionTarget != nullptr)
 	{
-		if(door->IsOpen)
+		auto targetAsDoor = Cast<AADoor>(_interactionTarget);
+
+		if(targetAsDoor != nullptr)
 		{
-			door->Open();	
-		}
-		else
-		{
-			door->Close();
+			targetAsDoor->Toggle();
 		}
 		
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,
+		"Interacting ");
+		}
 	}
+
 }
+
+

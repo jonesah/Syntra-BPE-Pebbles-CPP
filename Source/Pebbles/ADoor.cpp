@@ -1,77 +1,72 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
 #include "ADoor.h"
 
-
-ADoor::ADoor()
+// Sets default values
+AADoor::AADoor()
 {
+ 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true;
-	
-	Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
+	Arrow = CreateDefaultSubobject<UArrowComponent>("Arrow");
 	Arrow->SetupAttachment(RootComponent);
 	
-    DoorFrameMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorFrameMesh"));
-	DoorFrameMesh->AttachToComponent(Arrow, FAttachmentTransformRules::KeepRelativeTransform);
-
-	DoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMesh"));
+	DoorMesh = CreateDefaultSubobject<UStaticMeshComponent>("DoorMesh");
 	DoorMesh->AttachToComponent(Arrow, FAttachmentTransformRules::KeepRelativeTransform);
 
-	IsOpen = false;
+	DoorFrame = CreateDefaultSubobject<UStaticMeshComponent>("DoorFrameMesh");
+	DoorFrame->AttachToComponent(Arrow, FAttachmentTransformRules::KeepRelativeTransform);
+}
+
+// Called when the game starts or when spawned
+void AADoor::BeginPlay()
+{
+	Super::BeginPlay();
 	
 }
 
-void ADoor::Open()
+// Called every frame
+void AADoor::Tick(float DeltaTime)
 {
-	if(GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow,
-			"Opening Door");
+	Super::Tick(DeltaTime);
 
-	InMotion = true;
-	To = 90;
-}
-
-void ADoor::Close()
-{
-	if(GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow,
-			"Opening Door");
-
-	InMotion = true;
-	To = 0;
-}
-
-void ADoor::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void ADoor::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	if(InMotion)
+	if(_isChangingState)
 	{
-		if(GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow,
-				"Door moving");
-		FQuat targetRotator = FQuat(FRotator(0,To,0));
-		FQuat newAngle = FMath::Lerp(
-			DoorMesh->GetComponentRotation().Quaternion(),
-			targetRotator,
-			0.01f);
-
-		DoorMesh->SetWorldRotation(newAngle);
-
+		auto newAngle = FMath::FInterpTo(_currentAngle, _targetAngle, DeltaTime, 5); 
 		
-		auto yaw = newAngle.Rotator().Yaw;
-		if(FMath::IsNearlyEqual(yaw, To, 0.1))
+		// auto newAngle = FMath::Lerp(_currentAngle, _targetAngle, DeltaTime);
+		DoorMesh->SetRelativeRotation(FRotator(0, newAngle, 0));
+		_currentAngle = newAngle;
+		if(FMath::IsNearlyEqual(_currentAngle, _targetAngle, 0.1))
 		{
-			if(GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow,
-					"Door motion complete");
-
-			InMotion = false;
-			IsOpen = !IsOpen;
+			_isChangingState = false;
+			_isOpenedState = !_isOpenedState;
 		}
 	}
 }
+
+void AADoor::Open()
+{
+	_targetAngle = 90.0;
+	_isChangingState = true;
+}
+
+void AADoor::Close()
+{
+	_targetAngle = 0.0;
+	_isChangingState = true;
+}
+
+void AADoor::Toggle()
+{
+	if(_isOpenedState)
+	{
+		Close();
+	} else
+	{
+		Open();
+	}
+}
+
+
 

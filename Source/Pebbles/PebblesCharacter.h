@@ -48,12 +48,13 @@ class APebblesCharacter : public ACharacter
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
-	
-	AActor* _interactionTarget;
 
+
+	
 public:
 	APebblesCharacter();
-	
+
+	AActor* _interactionTarget;
 
 protected:
 
@@ -62,7 +63,9 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
 	void Interact(const FInputActionValue& Value);
+			
 
 protected:
 	// APawn interface
@@ -71,7 +74,7 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
-	virtual void Tick(float DeltaTime) override;
+	void Tick(float DeltaSeconds) override;
 
 public:
 	/** Returns CameraBoom subobject **/
