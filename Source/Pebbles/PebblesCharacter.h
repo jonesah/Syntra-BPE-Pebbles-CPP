@@ -48,10 +48,13 @@ class APebblesCharacter : public ACharacter
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
+
+
 	
 public:
 	APebblesCharacter();
-	
+
+	AActor* _interactionTarget;
 
 protected:
 

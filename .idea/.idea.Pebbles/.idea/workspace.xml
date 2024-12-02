@@ -10,8 +10,12 @@
   <component name="ChangeListManager">
     <list default="true" id="f723376f-893a-4041-85d0-1178a8c7b6f2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Pebbles/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Pebbles/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/1/EJ/PGUWWHRTS59S34GKBX0OUI.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/1/EJ/PGUWWHRTS59S34GKBX0OUI.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/6/NP/Z9EK2TXQ1TFO26WFZHWZII.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/6/NP/Z9EK2TXQ1TFO26WFZHWZII.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEditor.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEditor.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/StarterContent/Props/SM_Door.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/StarterContent/Props/SM_Door.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Pebbles/ADoor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Pebbles/ADoor.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Pebbles/ADoor.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Pebbles/ADoor.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Pebbles/PebblesCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Pebbles/PebblesCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Pebbles/PebblesCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Pebbles/PebblesCharacter.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,20 +41,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "C++ Project.Pebbles.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Les2611",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;C++ Project.Pebbles.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;samples&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CidrLocalAttachDebugger.recentlyUsed">
       <recent name="com.jetbrains.rider.cpp.debugger.RiderCppLLDBDriverConfiguration" />
@@ -443,7 +447,8 @@
       <workItem from="1729687754672" duration="24000" />
       <workItem from="1732616012239" duration="3829000" />
       <workItem from="1732622895704" duration="2677000" />
-      <workItem from="1732871353385" duration="3530000" />
+      <workItem from="1732871353385" duration="4882000" />
+      <workItem from="1732882122150" duration="9718000" />
     </task>
     <servers />
   </component>

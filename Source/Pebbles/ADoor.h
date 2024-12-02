@@ -11,6 +11,12 @@ UCLASS()
 class PEBBLES_API AADoor : public AActor
 {
 	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Angle, meta = (AllowPrivateAccess))
+	float _currentAngle = 0.0f;
+	float _targetAngle = 90.0f;
+	bool _isChangingState = false;
+	bool _isOpenedState = false;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -33,4 +39,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void Open();
+	void Close();
+	void Toggle();
 };

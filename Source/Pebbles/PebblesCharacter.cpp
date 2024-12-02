@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "PebblesCharacter.h"
+
+#include "ADoor.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -115,13 +117,16 @@ void APebblesCharacter::Tick(float DeltaSeconds)
 
 	if(hasOverlap && outActors.Num() > 0)
 	{
-		AActor* interactionTarget = outActors[0];
+		_interactionTarget = outActors[0];
 		
 		if(GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 0, FColor::Yellow,
-		"Press E to interact with " + interactionTarget->GetName() + "!");
+		"Press E to interact with " + _interactionTarget->GetName() + "!");
 		}
+	} else
+	{
+		_interactionTarget = nullptr;
 	}
 }
 
@@ -152,7 +157,7 @@ void APebblesCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APebblesCharacter::Look);
 
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &APebblesCharacter::Interact);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &APebblesCharacter::Interact);
 	}
 	else
 	{
@@ -198,12 +203,22 @@ void APebblesCharacter::Look(const FInputActionValue& Value)
 
 void APebblesCharacter::Interact(const FInputActionValue& Value)
 {
-	if(GEngine)
+	if(_interactionTarget != nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,
-	"Interacting ");
+		auto targetAsDoor = Cast<AADoor>(_interactionTarget);
+
+		if(targetAsDoor != nullptr)
+		{
+			targetAsDoor->Toggle();
+		}
+		
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow,
+		"Interacting ");
+		}
 	}
-	
+
 }
 
 
